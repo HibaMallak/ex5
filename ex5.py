@@ -3,6 +3,7 @@ import os
 
 
 
+
 def names_of_registered_students(input_json_path, course_name):
     """
     This function returns a list of the names of the students who registered for
@@ -12,7 +13,26 @@ def names_of_registered_students(input_json_path, course_name):
     :param course_name: The name of the course.
     :return: List of the names of the students.
     """
-    pass
+
+    students_in_course = []
+    open(input_json_path,'r')
+    for student_course in input_json_path.values():
+        for key in student_course.keys():
+            for courses in key["registered_courses"]:
+                if courses == course_name:
+                    students_in_course += [key["student_name"]]
+
+    close(input_json_path)
+    return students_in_course
+
+
+
+
+
+
+
+
+
 
 
 def enrollment_numbers(input_json_path, output_file_path):
@@ -23,7 +43,9 @@ def enrollment_numbers(input_json_path, output_file_path):
     :param input_json_path: Path of the students database json file.
     :param output_file_path: Path of the output text file.
     """
+    #open(output_file_path, w)
     pass
+
 
 
 
