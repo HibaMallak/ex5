@@ -15,25 +15,17 @@ def names_of_registered_students(input_json_path, course_name):
     """
 
     students_in_course = []
-    open(input_json_path, 'r')
-    file = json.load(input_json_path.read())
-    input_json_path.close()
-    for student_course in file.values():
-        for key in student_course.keys():
-            for courses in key["registered_courses"]:
-                if courses == course_name:
-                    print([key["student_name"]])
-                    students_in_course += [key["student_name"]]
+    with open(input_json_path, 'r') as f:
+        file = json.load(f)
+        for student_course in file.values():
+            for key in student_course.keys():
+                student_name = student_course["student_name"]
+                if key == "registered_courses":
+                    for courses in student_course[key]:
+                        if courses == course_name:
+                            students_in_course += [student_name]
 
     return students_in_course
-
-
-
-
-
-
-
-
 
 
 
@@ -47,7 +39,7 @@ def enrollment_numbers(input_json_path, output_file_path):
     :param output_file_path: Path of the output text file.
     """
     open(input_json_path, 'r')
-    file = json.load(input_json_path.read())
+    file = json.load(input_json_path)
     input_json_path.close()
     open(output_file_path, 'w')
     courses_names_list = []
