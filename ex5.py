@@ -1,6 +1,6 @@
+from fileinput import close
 import json
 import os
-
 
 
 
@@ -15,15 +15,18 @@ def names_of_registered_students(input_json_path, course_name):
     """
 
     students_in_course = []
-    open(input_json_path,'r')
-    for student_course in input_json_path.values():
+    open(input_json_path, 'r')
+    file = json.load(input_json_path.read())
+    input_json_path.close()
+    for student_course in file.values():
         for key in student_course.keys():
             for courses in key["registered_courses"]:
                 if courses == course_name:
+                    print([key["student_name"]])
                     students_in_course += [key["student_name"]]
 
-    close(input_json_path)
     return students_in_course
+
 
 
 
@@ -43,8 +46,24 @@ def enrollment_numbers(input_json_path, output_file_path):
     :param input_json_path: Path of the students database json file.
     :param output_file_path: Path of the output text file.
     """
-    #open(output_file_path, w)
-    pass
+    open(input_json_path, 'r')
+    file = json.load(input_json_path.read())
+    input_json_path.close()
+    open(output_file_path, 'w')
+    courses_names_list = []
+    for find_course_name in file.values():
+        for course_name in find_course_name.values():
+            courses_names_list.append(course_name)
+    
+    courses_names_list = list( dict.fromkeys(courses_names_list))
+    courses_names_list.sort()
+    for course in courses_names_list:
+        students_in_current_course = names_of_registered_students(input_json_path, course_name)
+        students_number = 0
+        for student in students_in_current_course:
+            students_number += 1
+        output_file_path.write(course + " " + students_number + "\n")
+    output_file_path.close()
 
 
 
@@ -57,6 +76,4 @@ def courses_for_lecturers(json_directory_path, output_json_path):
     :param output_json_path: Path of the output json file.
     """
     pass
-
-
 
