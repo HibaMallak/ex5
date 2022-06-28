@@ -28,8 +28,6 @@ def names_of_registered_students(input_json_path, course_name):
     return students_in_course
 
 
-
-
 def enrollment_numbers(input_json_path, output_file_path):
     """
     This function writes all the course names and the number of enrolled
@@ -38,26 +36,23 @@ def enrollment_numbers(input_json_path, output_file_path):
     :param input_json_path: Path of the students database json file.
     :param output_file_path: Path of the output text file.
     """
-    open(input_json_path, 'r')
-    file = json.load(input_json_path)
-    input_json_path.close()
-    open(output_file_path, 'w')
-    courses_names_list = []
-    for find_course_name in file.values():
-        for course_name in find_course_name.values():
-            courses_names_list.append(course_name)
+    f1= open(input_json_path, 'r')
+    file = json.loads(f1.read())
+    f1.close()
+    f2=open(output_file_path, 'w')
+
+    courses_names = {}
+    for student in file:
+        for course in file[student]['registered_courses']:
+           if course in courses_names:
+               courses_names[course]+=1
+           else:
+               courses_names[course]=1
     
-    courses_names_list = list( dict.fromkeys(courses_names_list))
-    courses_names_list.sort()
-    for course in courses_names_list:
-        students_in_current_course = names_of_registered_students(input_json_path, course_name)
-        students_number = 0
-        for student in students_in_current_course:
-            students_number += 1
-        output_file_path.write(course + " " + students_number + "\n")
-    output_file_path.close()
+    for course in sorted(courses_names):
+        f2.write('"' + course + '"' + " " + str(courses_names[course]) + os.linesep)
 
-
+    f2.close()
 
 
 def courses_for_lecturers(json_directory_path, output_json_path):
@@ -67,5 +62,23 @@ def courses_for_lecturers(json_directory_path, output_json_path):
     :param json_directory_path: Path of the semsters_data files.
     :param output_json_path: Path of the output json file.
     """
-    pass
+    fout =open(output_json_path, 'w')
+    lecturers = {}
+    for file in os.listdir(json_directory_path):
+        if(file.endswith('.json')):
+            f = open(json_directory_path+ os.sep+file, 'r')
+            data = json.loads(f.read())
+            f.close()
+            for course_id in data:
+                for lecture in data[course_id]['lecturers']:
+                    if lecture in lecturers:
+                        if data[course_id]['course_name'] not in lecturers[lecture]:
+                            lecturers[lecture].append(data[course_id]['course_name'])
+                    else:
+                         lecturers[lecture]= [data[course_id]['course_name']]
+    
+
+    fout.write(json.dumps(lecturers))
+
+    fout.close()
 
